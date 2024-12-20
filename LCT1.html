@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Công Tác</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        td[contenteditable="true"] {
+            background-color: #e6f7ff;
+            cursor: text;
+        }
+
+        .monday {
+            background-color: #ffe6e6;
+        }
+
+        .tuesday {
+            background-color: #fff4e6;
+        }
+
+        .wednesday {
+            background-color: #ffffe6;
+        }
+
+        .thursday {
+            background-color: #e6ffe6;
+        }
+
+        .friday {
+            background-color: #e6f7ff;
+        }
+
+        .saturday {
+            background-color: #f0e6ff;
+        }
+
+        .sunday {
+            background-color: #ffe6f0;
+        }
+
+    </style>
+    <script>
+        let scheduleData = [
+            {
+                date: "Thứ Hai, 17/12/2024",
+                time: "08:00",
+                content: "Họp giao ban tuần",
+                leader: "Ông Nguyễn Văn A",
+                department: "Phòng Hành Chính"
+            },
+            {
+                date: "Thứ Hai, 17/12/2024",
+                time: "10:00",
+                content: "Họp bộ phận",
+                leader: "Ông Nguyễn Văn B",
+                department: "Phòng Nhân Sự"
+            },
+            {
+                date: "Thứ Ba, 18/12/2024",
+                time: "09:00",
+                content: "Đào tạo kỹ năng",
+                leader: "Bà Trần Thị B",
+                department: "Phòng Đào Tạo"
+            },
+            {
+                date: "Thứ Tư, 19/12/2024",
+                time: "14:00",
+                content: "Kiểm tra dự án",
+                leader: "Ông Lê Văn C",
+                department: "Phòng Dự Án"
+            },
+            {
+                date: "Thứ Năm, 20/12/2024",
+                time: "10:00",
+                content: "Họp triển khai kế hoạch",
+                leader: "Bà Nguyễn Thị D",
+                department: "Phòng Kế Hoạch"
+            },
+            {
+                date: "Thứ Sáu, 21/12/2024",
+                time: "15:00",
+                content: "Tổng kết tháng",
+                leader: "Ông Phạm Văn E",
+                department: "Phòng Tài Chính"
+            }
+        ];
+
+        function renderSchedule() {
+            const tbody = document.querySelector("tbody");
+            tbody.innerHTML = ""; // Clear existing content
+
+            let lastDate = "";
+            scheduleData.forEach((item, index) => {
+                const row = document.createElement("tr");
+
+                // Assign class for row color based on the day
+                const dayOfWeek = getDayOfWeek(item.date);
+                row.className = dayOfWeek;
+
+                row.innerHTML = `
+                    <td contenteditable="true" onblur="updateData(${index}, 'date', this.innerText)" rowspan="${getRowSpan(item.date)}">${lastDate === item.date ? "" : item.date}</td>
+                    <td contenteditable="true" onblur="updateData(${index}, 'time', this.innerText)">${item.time}</td>
+                    <td contenteditable="true" onblur="updateData(${index}, 'content', this.innerText)">${item.content}</td>
+                    <td contenteditable="true" onblur="updateData(${index}, 'leader', this.innerText)">${item.leader}</td>
+                    <td contenteditable="true" onblur="updateData(${index}, 'department', this.innerText)">${item.department}</td>
+                `;
+
+                if (lastDate === item.date) {
+                    row.firstElementChild.remove(); // Remove the duplicate date cell
+                } else {
+                    lastDate = item.date;
+                }
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateData(index, key, value) {
+            scheduleData[index][key] = value;
+        }
+
+        function addRow() {
+            scheduleData.push({
+                date: "",
+                time: "",
+                content: "",
+                leader: "",
+                department: ""
+            });
+            renderSchedule();
+        }
+
+        function getDayOfWeek(dateString) {
+            const days = {
+                "Thứ Hai": "monday",
+                "Thứ Ba": "tuesday",
+                "Thứ Tư": "wednesday",
+                "Thứ Năm": "thursday",
+                "Thứ Sáu": "friday",
+                "Thứ Bảy": "saturday",
+                "Chủ Nhật": "sunday"
+            };
+
+            for (const [day, className] of Object.entries(days)) {
+                if (dateString.startsWith(day)) {
+                    return className;
+                }
+            }
+
+            return ""; // Default if no match
+        }
+
+        function getRowSpan(date) {
+            return scheduleData.filter(item => item.date === date).length;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderSchedule();
+            document.querySelector("#addRowButton").addEventListener("click", addRow);
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1 contenteditable="true">Lịch Công Tác Nội Bộ</h1>
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ngày Tháng</th>
+                <th>Thời Gian</th>
+                <th>Nội Dung</th>
+                <th>Lãnh Đạo Tham Dự</th>
+                <th>Phòng Ban Chuẩn Bị</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Nội dung sẽ được tạo bởi JavaScript -->
+        </tbody>
+    </table>
+
+    <button id="addRowButton" style="margin: 20px; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Thêm Dòng Mới</button>
+</body>
+</html>
